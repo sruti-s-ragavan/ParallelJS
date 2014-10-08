@@ -190,8 +190,8 @@ ul.screens li a img {
 
 /* canvas */
 .processing {
-	width:800px;
-	height:1000px;
+	width:600px;
+	height:800px;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-user-select: none;
 	background-color:#FFFCF0;

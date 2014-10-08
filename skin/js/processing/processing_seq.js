@@ -5479,41 +5479,32 @@
       if (vertArray.length === 0) return;
       var closeShape = mode === 2;
       if (closeShape) vertArray.push(vertArray[0]);
-      var vertArrayLength = vertArray.length;
-
       var lineVertArray = [];
       var fillVertArray = [];
       var colorVertArray = [];
       var strokeVertArray = [];
-      var texVertArray = []
+      var texVertArray = [];
       var cachedVertArray;
       firstVert = true;
-
-      var computedArray = vertArray.mapPar((el, idx) => function(el, idx){
-        var cachedVertArray = el;
-        var accumulator = [];
-        for (var j = 0; j < 3; j++) 
-          accumulator.push(cachedVertArray[j]);
-        accumulator.push(cachedVertArray[3]);
-        accumulator.push(cachedVertArray[4]);
-        for (var j = 5, c=0; j < 9; j++, c++) 
-          accumulator.push(cachedVertArray[j]);
-        for (var j = 9, c=0; j < 13; j++, c++) 
-          accumulator.push(cachedVertArray[j]);
-      });
-
-      for(var i=0; i<computedArray.length; i++){
-        var thisArray = computedArray[i];
-        for(var j=0; j<3; j++)
-          fillVertArray.push(thisArray[j]);
-        texVertArray.push(thisArray[3]);
-        texVertArray.push(thisArray[4]);
-        for(var j=5; j<9; j++)
-          colorVertArray.push(thisArray[j]);
-        for(var j=9; j<13; j++)
-          strokeVertArray.push(thisArray[j]);
+      var i, j, k;
+      var vertArrayLength = vertArray.length;
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 0; j < 3; j++) fillVertArray.push(cachedVertArray[j])
       }
-
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 5; j < 9; j++) colorVertArray.push(cachedVertArray[j])
+      }
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 9; j < 13; j++) strokeVertArray.push(cachedVertArray[j])
+      }
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        texVertArray.push(cachedVertArray[3]);
+        texVertArray.push(cachedVertArray[4])
+      }
       if (isCurve && (curShape === 20 || curShape === undef)) {
         if (vertArrayLength > 3) {
           var b = [],
@@ -5655,12 +5646,11 @@
       isBezier = false;
       curveVertArray = [];
       curveVertCount = 0;
-      if (closeShape) vertArray.pop();
+      if (closeShape) vertArray.pop()
     };
     Drawing3D.prototype.endShape = function(mode) {
       if (vertArray.length === 0) return;
       var closeShape = mode === 2;
-      var vertArrayLength = vertArray.length;
       var lineVertArray = [];
       var fillVertArray = [];
       var colorVertArray = [];
@@ -5668,32 +5658,25 @@
       var texVertArray = [];
       var cachedVertArray;
       firstVert = true;
-
-      var computedArray = vertArray.mapPar((el, idx) => function(el, idx){
-        var cachedVertArray = el;
-        var accumulator = [];
-        for (var j = 0; j < 3; j++) 
-          accumulator.push(cachedVertArray[j]);
-        accumulator.push(cachedVertArray[3]);
-        accumulator.push(cachedVertArray[4]);
-        for (var j = 5, c=0; j < 9; j++, c++) 
-          accumulator.push(cachedVertArray[j]);
-        for (var j = 9, c=0; j < 13; j++, c++) 
-          accumulator.push(cachedVertArray[j]);
-      });
-
-      for(var i=0; i<computedArray.length; i++){
-        var thisArray = computedArray[i];
-        for(var j=0; j<3; j++)
-          fillVertArray.push(thisArray[j]);
-        texVertArray.push(thisArray[3]);
-        texVertArray.push(thisArray[4]);
-        for(var j=5; j<9; j++)
-          colorVertArray.push(thisArray[j]);
-        for(var j=9; j<13; j++)
-          strokeVertArray.push(thisArray[j]);
+      var i, j, k;
+      var vertArrayLength = vertArray.length;
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 0; j < 3; j++) fillVertArray.push(cachedVertArray[j])
       }
-      
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 5; j < 9; j++) colorVertArray.push(cachedVertArray[j])
+      }
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        for (j = 9; j < 13; j++) strokeVertArray.push(cachedVertArray[j])
+      }
+      for (i = 0; i < vertArrayLength; i++) {
+        cachedVertArray = vertArray[i];
+        texVertArray.push(cachedVertArray[3]);
+        texVertArray.push(cachedVertArray[4])
+      }
       if (closeShape) {
         fillVertArray.push(vertArray[0][0]);
         fillVertArray.push(vertArray[0][1]);
@@ -5878,7 +5861,7 @@
       isCurve = false;
       isBezier = false;
       curveVertArray = [];
-      curveVertCount = 0;
+      curveVertCount = 0
     };
     var splineForward = function(segments, matrix) {
       var f = 1 / segments;

@@ -5475,7 +5475,46 @@
       executeContextStroke();
       curContext.closePath()
     }
+
+    Processing.prototype.metrics = {
+      size:0,
+      visits:0,
+      time:0
+    };
+
+    Drawing2D.prototype.drawBezierCurves = function(vertArray, s, curContext){
+      var t1 = performance.now();
+
+      var vertArraysToProcess = vertArray.slice(1, vertArray.length-3);
+      var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
+            var thisVertIndex = j+1;
+            var previousVertArray = vertArray[thisVertIndex-1];
+            var nextVertArray = vertArray[thisVertIndex+1];
+            var twoAheadVertArray = vertArray[thisVertIndex+2];
+            var b = [];
+            b[0] = [cachedVertArray[0], cachedVertArray[1]];
+            b[1] = [cachedVertArray[0] + (s * nextVertArray[0] - s * previousVertArray[0]) / 6, 
+                    cachedVertArray[1] + (s * nextVertArray[1] - s * previousVertArray[1]) / 6];
+            b[2] = [nextVertArray[0] + (s * cachedVertArray[0] - s * twoAheadVertArray[0]) / 6, 
+                    nextVertArray[1] + (s * cachedVertArray[1] - s * twoAheadVertArray[1]) / 6];
+            b[3] = [nextVertArray[0], nextVertArray[1]];
+            return b;
+        });
+
+      for(var i = 0; i<computedBezierPoints.length; i++)
+           {
+            var b = computedBezierPoints[i];
+            curContext.bezierCurveTo(b[1][0], b[1][1], b[2][0], b[2][1], b[3][0], b[3][1])
+          }
+
+      var t2 = performance.now();
+      Processing.prototype.metrics.time += t2-t1;
+      Processing.prototype.metrics.visits++;
+      Processing.prototype.metrics.size += vertArray.length;
+    };
+
     Drawing2D.prototype.endShape = function(mode) {
+    
       if (vertArray.length === 0) return;
       var closeShape = mode === 2;
       if (closeShape) vertArray.push(vertArray[0]);
@@ -5513,29 +5552,7 @@
           curContext.beginPath();
           curContext.moveTo(vertArray[1][0], vertArray[1][1]);
 
-          //for (i = 1; i + 2 < vertArrayLength; i++)
-          //cachedVertArray = vertArray[i];
-          var vertArraysToProcess = vertArray.slice(1, vertArrayLength-3);
-          var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
-            var thisVertIndex = j+1;
-            var previousVertArray = vertArray[thisVertIndex-1];
-            var nextVertArray = vertArray[thisVertIndex+1];
-            var twoAheadVertArray = vertArray[thisVertIndex+2];
-            var b = [];
-            b[0] = [cachedVertArray[0], cachedVertArray[1]];
-            b[1] = [cachedVertArray[0] + (s * nextVertArray[0] - s * previousVertArray[0]) / 6, 
-                    cachedVertArray[1] + (s * nextVertArray[1] - s * previousVertArray[1]) / 6];
-            b[2] = [nextVertArray[0] + (s * cachedVertArray[0] - s * twoAheadVertArray[0]) / 6, 
-                    nextVertArray[1] + (s * cachedVertArray[1] - s * twoAheadVertArray[1]) / 6];
-            b[3] = [nextVertArray[0], nextVertArray[1]];
-            return b;
-          });
-
-          for(var i = 0; i<computedBezierPoints.length; i++)
-           {
-            var b = computedBezierPoints[i];
-            curContext.bezierCurveTo(b[1][0], b[1][1], b[2][0], b[2][1], b[3][0], b[3][1])
-          }
+          Drawing2D.prototype.drawBezierCurves(vertArray, s, curContext);
           fillStrokeClose();
         }
       } else if (isBezier && (curShape === 20 || curShape === undef)) {

@@ -5475,6 +5475,33 @@
       executeContextStroke();
       curContext.closePath()
     }
+
+    Processing.prototype.metrics = {
+      visits : 0,
+      time : 0,
+      size : 0
+    };
+
+    Drawing2D.prototype.drawBezierCurves = function(vertArray, s, curContext){
+      var t1 = performance.now();
+      var b = [], i;
+      var vertArrayLength = vertArray.length;
+      for (i = 1; i + 2 < vertArrayLength; i++) {
+            cachedVertArray = vertArray[i];
+            b[0] = [cachedVertArray[0], cachedVertArray[1]];
+            b[1] = [cachedVertArray[0] + (s * vertArray[i + 1][0] - s * vertArray[i - 1][0]) / 6, cachedVertArray[1] +
+              (s * vertArray[i + 1][1] - s * vertArray[i - 1][1]) / 6];
+            b[2] = [vertArray[i + 1][0] + (s * vertArray[i][0] - s * vertArray[i + 2][0]) / 6, vertArray[i + 1][1] + (s * vertArray[i][1] - s * vertArray[i + 2][1]) / 6];
+            b[3] = [vertArray[i + 1][0], vertArray[i + 1][1]];
+            curContext.bezierCurveTo(b[1][0], b[1][1], b[2][0], b[2][1], b[3][0], b[3][1])
+          }
+      var t2 = performance.now();
+
+      Processing.prototype.metrics.size += vertArray.length;
+      Processing.prototype.metrics.time += t2-t1;
+      Processing.prototype.metrics.visits++;
+    };
+
     Drawing2D.prototype.endShape = function(mode) {
       if (vertArray.length === 0) return;
       var closeShape = mode === 2;
@@ -5507,20 +5534,11 @@
       }
       if (isCurve && (curShape === 20 || curShape === undef)) {
         if (vertArrayLength > 3) {
-          var b = [],
-            s = 1 - curTightness;
+          var s = 1 - curTightness;
           curContext.beginPath();
           curContext.moveTo(vertArray[1][0], vertArray[1][1]);
-          for (i = 1; i + 2 < vertArrayLength; i++) {
-            cachedVertArray = vertArray[i];
-            b[0] = [cachedVertArray[0], cachedVertArray[1]];
-            b[1] = [cachedVertArray[0] + (s * vertArray[i + 1][0] - s * vertArray[i - 1][0]) / 6, cachedVertArray[1] +
-              (s * vertArray[i + 1][1] - s * vertArray[i - 1][1]) / 6];
-            b[2] = [vertArray[i + 1][0] + (s * vertArray[i][0] - s * vertArray[i + 2][0]) / 6, vertArray[i + 1][1] + (s * vertArray[i][1] - s * vertArray[i + 2][1]) / 6];
-            b[3] = [vertArray[i + 1][0], vertArray[i + 1][1]];
-            curContext.bezierCurveTo(b[1][0], b[1][1], b[2][0], b[2][1], b[3][0], b[3][1])
-          }
-          fillStrokeClose()
+          Drawing2D.prototype.drawBezierCurves(vertArray, s, curContext);
+          fillStrokeClose();
         }
       } else if (isBezier && (curShape === 20 || curShape === undef)) {
         curContext.beginPath();

@@ -1,0 +1,14 @@
+1000 clicks : 
+
+Parallel:
+Object { size: 1974000, visits: 24675, time: 26675.835253715486 } 0.0135
+Sequential:
+Object { visits: 24409, time: 3686.2828964249425, size: 2807035 } 0.0013
+
+100 max count
+
+"Sequential : " benchmark.js:46
+14:16:27.735 Object { visits: 3181, time: 421.565643485229, size: 346729 }
+
+"Parallel :"
+Object { size: 58800, visits: 2450, time: 3819.2537965220836 }

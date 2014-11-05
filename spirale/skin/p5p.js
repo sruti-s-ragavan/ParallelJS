@@ -285,6 +285,7 @@ var P5P = {
 			jQuery(sketch).bind("click",function(e){
 			
 				// event
+				console.log("Hi");
 				e.preventDefault();
 				
 				// link

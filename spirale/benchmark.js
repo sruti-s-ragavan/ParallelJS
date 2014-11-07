@@ -43,7 +43,6 @@ var benchmark = function(){
 	else
 		{
 			clearTimeout(benchmark, 1000);
-			console.log("Sequential : ");
 			console.log(Processing.prototype.metrics);
 		}
 };

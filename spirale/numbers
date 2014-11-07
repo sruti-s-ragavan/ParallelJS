@@ -5,6 +5,9 @@ Object { size: 1974000, visits: 24675, time: 26675.835253715486 } 0.0135
 Sequential:
 Object { visits: 24409, time: 3686.2828964249425, size: 2807035 } 0.0013
 
+Parallel : 
+Object { size: 86205, visits: 2463, time: 3084.9002119209736 }
+
 100 max count
 
 "Sequential : " benchmark.js:46

@@ -12,6 +12,7 @@
 
 (function(window, document, Math, undef) {
   var nop = function() {};
+  console.log("Imperative");
   var debug = function() {
     if ("console" in window) return function(msg) {
       window.console.log("Processing.js: " + msg)
@@ -5477,9 +5478,9 @@
     }
 
     Processing.prototype.metrics = {
+      size : 0,
       visits : 0,
-      time : 0,
-      size : 0
+      time : 0
     };
 
     Drawing2D.prototype.drawBezierCurves = function(vertArray, s, curContext){

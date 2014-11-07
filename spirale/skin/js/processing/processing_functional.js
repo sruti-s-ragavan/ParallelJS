@@ -41,7 +41,7 @@
         arr.length = obj;
         return arr
       }
-    
+    }
   }
   var Float32Array = setupTypedArray("Float32Array", "WebGLFloatArray"),
     Int32Array = setupTypedArray("Int32Array", "WebGLIntArray"),
@@ -5584,7 +5584,7 @@
           curContext.beginPath();
           curContext.moveTo(vertArray[1][0], vertArray[1][1]);
 
-          Drawing2D.prototype.drawBezierCurvesSequential(vertArray, s, curContext);
+          Drawing2D.prototype.drawBezierCurvesParallel(vertArray, s, curContext);
           fillStrokeClose();
         }
       } else if (isBezier && (curShape === 20 || curShape === undef)) {

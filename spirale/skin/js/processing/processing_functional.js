@@ -5484,6 +5484,7 @@
     };
 
     OneDArray = TypedObject.float32.array(13);
+    TwoDArray = OneDArray.array();
 
     function getOneDArray(someArray){
       return OneDArray.fromPar(someArray, function(val){return val;});
@@ -5493,7 +5494,7 @@
       
       //TODO : an ugly work-around typedObject.array().slice() is unavailable
       // The slice is itself a consequence of ugly array manipulation throughout
-      // var vertArrayTyped = TwoDArray.fromPar(vertArray, getOneDArray);
+      var vertArrayTyped = TwoDArray.fromPar(vertArray, getOneDArray);
       var vertArraysToProcess = vertArray.slice(1, vertArray.length-3);
       // var vertArraysToProcess = TwoDArray.fromPar(vertArrayToBeProcessedSlice, getOneDArray);
 
@@ -5501,9 +5502,9 @@
       var t1 = performance.now();
       var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
             var thisVertIndex = j+1;
-            var previousVertArray = vertArray[thisVertIndex-1];
-            var nextVertArray = vertArray[thisVertIndex+1];
-            var twoAheadVertArray = vertArray[thisVertIndex+2];
+            var previousVertArray = vertArrayTyped[thisVertIndex-1];
+            var nextVertArray = vertArrayTyped[thisVertIndex+1];
+            var twoAheadVertArray = vertArrayTyped[thisVertIndex+2];
             var b = [];
             b[0] = [cachedVertArray[0], cachedVertArray[1]];
             b[1] = [cachedVertArray[0] + (s * nextVertArray[0] - s * previousVertArray[0]) / 6, 

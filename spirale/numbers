@@ -1,17 +1,8 @@
-1000 clicks : 
+Functional Parallel : 
+Object { size: 261615, visits: 2445, time: 2293.6029956314956 }
 
-Parallel:
-Object { size: 1974000, visits: 24675, time: 26675.835253715486 } 0.0135
-Sequential:
-Object { visits: 24409, time: 3686.2828964249425, size: 2807035 } 0.0013
+Functional Sequential : 
+Object { size: 715540, visits: 18830, time: 32239.218557186137 }
 
-Parallel : 
-Object { size: 86205, visits: 2463, time: 3084.9002119209736 }
-
-100 max count
-
-"Sequential : " benchmark.js:46
-14:16:27.735 Object { visits: 3181, time: 421.565643485229, size: 346729 }
-
-"Parallel :"
-Object { size: 58800, visits: 2450, time: 3819.2537965220836 }
+Imperative sequential : 
+Object { size: 126880, visits: 2440, time: 291.6307675150438 }

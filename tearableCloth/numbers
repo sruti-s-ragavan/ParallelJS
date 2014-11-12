@@ -1,0 +1,14 @@
+Imperative Sequential : 
+Object { times: 343, time: 2993.6210968386854, size: 542283 }
+Object { times: 773, time: 152.85075105829614, size: 1222113 }
+
+Functional Sequential:
+Object { times: 669, time: 155.42651028106366, size: 1057689 }
+Object { times: 683, time: 129.77336627156603, size: 1079823 }
+
+Functional Parallel : 
+-Bails out of parallel execution
+Object { times: 296, time: 4431.316789554807, size: 467976 }
+Object { times: 175, time: 1811.9213698690955, size: 276675 }
+Object { times: 382, time: 3192.7230312101638, size: 603942 }
+Object { times: 1863, time: 5181.452075991174, size: 2945403 }

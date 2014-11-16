@@ -235,7 +235,7 @@ var Metrics = {
 
 Cloth.prototype.updateAllPoints = function(){
     var t1 = performance.now();
-    this.points.mapPar(function(pt){
+    this.points.map(function(pt){
         pt.update(.016);
     });
     var t2 = performance.now();

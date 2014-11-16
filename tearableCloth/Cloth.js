@@ -227,18 +227,9 @@ Cloth.prototype.update = function () {
         var p = this.points.length;
         while (p--) this.points[p].resolve_constraints();
     }
-    this.updateAllPoints();
+    p = this.points.length;
+    while(p--) this.points[p].update(.016);
 };
-
-Cloth.prototype.updateAllPoints = function(){
-    console.log("Update Points : " + this.points.length);
-    var t1 = performance.now();
-    this.points.mapPar(function(pt){
-        pt.update(.016);
-    });
-    var t2 = performance.now();
-    console.log(t2 - t1);
-}
 
 Cloth.prototype.draw = function () {
 

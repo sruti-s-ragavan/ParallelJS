@@ -69,6 +69,7 @@ var Point = function (x, y) {
     this.anchor = false;
 
     this.constraints = [];
+    this.remove = false;
 };
 
 Point.prototype.simulate = function (delta) {
@@ -86,9 +87,12 @@ Point.prototype.simulate = function (delta) {
                 this.py = this.y - (mouse.y - mouse.py) * 1.8;
             }
 
+        } else if (dist < mouse_cut) {
+            var i = this.constraints.length;
+            while(i--) this.remove_constraint(this.constraints[i]);
         }
     }
-
+    this.accelerate(0, gravity);
     deltaSquared = delta * delta;
     nx = this.x + ((this.x - this.px) * .99) + ((this.ax / 2) * deltaSquared);
     ny = this.y + ((this.y - this.py) * .99) + ((this.ay / 2) * deltaSquared);
@@ -145,10 +149,10 @@ Point.prototype.attach = function (point) {
 };
 
 Point.prototype.remove_constraint = function (lnk) {
-
     var i = this.constraints.length;
     while (i--)
         if (this.constraints[i] == lnk) this.constraints.splice(i, 1);
+    lnk.remove = true;
 };
 
 Point.prototype.accelerate = function (x, y) {
@@ -160,6 +164,7 @@ var Constraint = function (p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
     this.length = spacing;
+    this.remove = false;
 };
 
 Point.prototype.move =  function(dx, dy){
@@ -175,7 +180,9 @@ Constraint.prototype.resolve = function () {
         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
         diff = (this.length - dist) / dist;
 
-    if (dist > tear_distance) this.p1.remove_constraint(this);
+    if (dist > tear_distance) {
+        this.p1.remove_constraint(this);
+    }
 
     var px = diff_x * diff * 0.5;
     var py = diff_y * diff * 0.5;
@@ -224,13 +231,24 @@ Cloth.prototype.update = function () {
     while (i--) {
         var p = this.points.length;
         while (p--) this.points[p].resolve_constraints();
+        
+        p = this.points.length
+        while(p--){
+            var pt = this.points[p];
+            pt.simulate(delta_time);
+        }
+        // this.refreshPointsAndConstraints();
     }
-    p = this.points.length;
-    while(p--) {
-        var pt = this.points[p];
-        pt.accelerate(0, gravity);
-        pt.simulate(delta_time);
+};
+
+Cloth.prototype.refreshPointsAndConstraints = function(){
+    this.constraints_list = [];
+    var new_points = [];
+    var c = this.constraints_list.length;
+    while(c--){
+        if(this.constraints_list[c].remove) this.constraints_list.splice(c, 1);
     }
+    this.points = new_points;
 };
 
 Cloth.prototype.drawPoints = function(){

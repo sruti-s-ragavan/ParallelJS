@@ -74,6 +74,7 @@ var Point = function (x, y) {
 
 Point.prototype.simulate = function (delta) {
     if(this.anchor) return;
+    this.fix_bounds();
     if (mouse.down) {
 
         var diff_x = this.x - mouse.x,
@@ -115,11 +116,8 @@ Point.prototype.draw = function () {
 };
 
 Point.prototype.resolve_constraints = function () {
-
     var i = this.constraints.length;
     while (i--) this.constraints[i].resolve();
-
-    this.fix_bounds();
 };
 
 Point.prototype.fix_bounds = function(){
@@ -217,6 +215,7 @@ var Cloth = function () {
             this.points.push(p);
         }
     }
+    console.log(this.constraints_list.length);
 };
 
 Cloth.prototype.attach = function(p1, p2){
@@ -231,24 +230,25 @@ Cloth.prototype.update = function () {
     while (i--) {
         var p = this.points.length;
         while (p--) this.points[p].resolve_constraints();
-        
-        p = this.points.length
-        while(p--){
-            var pt = this.points[p];
-            pt.simulate(delta_time);
-        }
-        // this.refreshPointsAndConstraints();
+        this.recomputeConstraints();
     }
+
+    p = this.points.length;
+    while(p--){
+        var pt = this.points[p];
+        pt.simulate(delta_time);
+    }
+    this.recomputeConstraints();
 };
 
-Cloth.prototype.refreshPointsAndConstraints = function(){
-    this.constraints_list = [];
-    var new_points = [];
+Cloth.prototype.recomputeConstraints = function(){
+    var new_constraints_list = [];
     var c = this.constraints_list.length;
     while(c--){
-        if(this.constraints_list[c].remove) this.constraints_list.splice(c, 1);
+        var constraint = this.constraints_list[c];
+        if(!constraint.remove) new_constraints_list.push(constraint);
     }
-    this.points = new_points;
+    this.constraints_list = new_constraints_list;
 };
 
 Cloth.prototype.drawPoints = function(){
@@ -264,8 +264,7 @@ Cloth.prototype.drawConstraints = function(){
 Cloth.prototype.draw = function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    cloth.drawPoints();
-    // cloth.drawConstraints();
+    cloth.drawConstraints();
     ctx.stroke();
 };
 

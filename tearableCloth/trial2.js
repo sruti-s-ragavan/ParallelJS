@@ -26,8 +26,8 @@ var physics_accuracy = 3,
     mouse_influence = 20,
     mouse_cut = 5,
     gravity = 1200,
-    cloth_height = 30,
-    cloth_width = 50,
+    cloth_height = 40,
+    cloth_width = 60,
     start_y = 20,
     spacing = 7,
     tear_distance = 60,
@@ -74,7 +74,6 @@ var Point = function (x, y) {
 
 Point.prototype.simulate = function (delta) {
     if(this.anchor) return;
-    this.fix_bounds();
     if (mouse.down) {
 
         var diff_x = this.x - mouse.x,
@@ -104,7 +103,7 @@ Point.prototype.simulate = function (delta) {
     this.x = nx;
     this.y = ny;
 
-    this.ay = this.ax = 0
+    this.ay = this.ax = 0;
 };
 
 Point.prototype.draw = function () {
@@ -120,22 +119,17 @@ Point.prototype.resolve_constraints = function () {
     while (i--) this.constraints[i].resolve();
 };
 
-Point.prototype.fix_bounds = function(){
-    if (this.x > boundsx) {
-
-        this.x = 2 * boundsx - this.x;
-        
+Point.prototype.fix_bounds = function(bx, by){
+    if(this.anchor) return;
+    if (this.x > bx) {
+        this.x = 2 * bx - this.x;
     } else if (this.x < 1) {
-
         this.x = 2 - this.x;
     }
 
-    if (this.y > boundsy) {
-
-        this.y = 2 * boundsy - this.y;
-        
+    if (this.y > by) {
+        this.y = 2 * by - this.y;
     } else if (this.y < 1) {
-
         this.y = 2 - this.y;
     }
 };
@@ -195,6 +189,19 @@ Constraint.prototype.draw = function () {
     ctx.lineTo(this.p2.x, this.p2.y);
 };
 
+
+var slice = function(arr, count){
+    var slice_length = Math.floor(arr.length / (count));
+    var slices = [];
+    for(var i=1; i<=count-1 ; i++){
+        var array_slice = arr.slice((i-1) * slice_length, i * slice_length);
+        slices.push(array_slice);
+    }
+    slices.push(arr.slice((i-1) * slice_length, arr.length));
+    return slices;
+};
+
+
 var Cloth = function () {
 
     this.points = [];
@@ -215,7 +222,7 @@ var Cloth = function () {
             this.points.push(p);
         }
     }
-    console.log(this.constraints_list.length);
+    this.slices = slice(this.points, 20);
 };
 
 Cloth.prototype.attach = function(p1, p2){
@@ -228,16 +235,26 @@ Cloth.prototype.update = function () {
     var i = physics_accuracy;
 
     while (i--) {
-        var p = this.points.length;
-        while (p--) this.points[p].resolve_constraints();
+        var c = this.constraints_list.length;
+        while (c--) this.constraints_list[c].resolve();
         this.recomputeConstraints();
     }
 
-    p = this.points.length;
-    while(p--){
-        var pt = this.points[p];
-        pt.simulate(delta_time);
-    }
+    this.slices.mapPar(function(sl){
+        var l = sl.length;
+        while(l--) {
+            sl[l].fix_bounds(boundsx, boundsy);
+        }
+    });
+
+    this.slices.map(function(sl){
+        var l = sl.length;
+        while(l--) {
+            sl[l].simulate(delta_time);
+        }
+    });
+
+    
     this.recomputeConstraints();
 };
 
@@ -250,11 +267,6 @@ Cloth.prototype.recomputeConstraints = function(){
     }
     this.constraints_list = new_constraints_list;
 };
-
-Cloth.prototype.drawPoints = function(){
-    var i = cloth.points.length;
-    while(i--) cloth.points[i].draw();
-}
 
 Cloth.prototype.drawConstraints = function(){
     var i = cloth.constraints_list.length;

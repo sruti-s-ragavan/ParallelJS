@@ -11,7 +11,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "ANYS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -72,28 +72,30 @@ var Point = function (x, y) {
     this.remove = false;
 };
 
-Point.prototype.simulate = function (delta) {
+Point.prototype.simulate = function (options) {
+    this.fix_bounds(boundsx, boundsy);
     if(this.anchor) return;
-    if (mouse.down) {
 
-        var diff_x = this.x - mouse.x,
-            diff_y = this.y - mouse.y,
+    if (options.mouse_down) {
+
+        var diff_x = this.x - options.mouse_x,
+            diff_y = this.y - options.mouse_y,
             dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
 
-        if (mouse.button == 1) {
+        if (options.mouse_button == 1) {
 
-            if (dist < mouse_influence) {
-                this.px = this.x - (mouse.x - mouse.px) * 1.8;
-                this.py = this.y - (mouse.y - mouse.py) * 1.8;
+            if (dist < options.mouse_influence) {
+                this.px = this.x - (options.mouse_x - options.mouse_px) * 1.8;
+                this.py = this.y - (options.mouse_y - options.mouse_py) * 1.8;
             }
 
-        } else if (dist < mouse_cut) {
+        } else if (dist < options.mouse_cut) {
             var i = this.constraints.length;
             while(i--) this.remove_constraint(this.constraints[i]);
         }
     }
-    this.accelerate(0, gravity);
-    deltaSquared = delta * delta;
+    this.accelerate(0, options.gravity);
+    deltaSquared = options.delta * options.delta;
     nx = this.x + ((this.x - this.px) * .99) + ((this.ax / 2) * deltaSquared);
     ny = this.y + ((this.y - this.py) * .99) + ((this.ay / 2) * deltaSquared);
 
@@ -222,7 +224,7 @@ var Cloth = function () {
             this.points.push(p);
         }
     }
-    this.slices = slice(this.points, 20);
+    this.slices = slice(this.points, 10);
 };
 
 Cloth.prototype.attach = function(p1, p2){
@@ -239,22 +241,27 @@ Cloth.prototype.update = function () {
         while (c--) this.constraints_list[c].resolve();
         this.recomputeConstraints();
     }
-
-    this.slices.mapPar(function(sl){
-        var l = sl.length;
-        while(l--) {
-            sl[l].fix_bounds(boundsx, boundsy);
-        }
-    });
-
-    this.slices.map(function(sl){
-        var l = sl.length;
-        while(l--) {
-            sl[l].simulate(delta_time);
-        }
-    });
-
+    var options = {
+        mouse_down : mouse.down,
+        mouse_influence : mouse_influence,
+        mouse_button : mouse.button,
+        mouse_x : mouse.x,
+        mouse_y : mouse.y,
+        mouse_px : mouse.px,
+        mouse_py : mouse.py,
+        mouse_cut : mouse_cut,
+        gravity : gravity,
+        delta : delta_time
+    };
     
+    for(var i=0; i<this.slices.length; i++){
+        var slice = this.slices[i];
+        console.log("A2");
+        slice.mapPar(function(pt){
+            pt.simulate(options);
+        });
+        console.log("B2");
+    }
     this.recomputeConstraints();
 };
 

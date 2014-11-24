@@ -5483,12 +5483,29 @@
       time:0
     };
 
+    Array.prototype.split = function(N){
+      var slices = [];
+      var sliceLength = Math.ceil(this.length / N);
+      var current = 0;
+      for(var i=0; i<N; i++, current += sliceLength){
+        var endIndexExclusive = Math.min(current + sliceLength, this.length);
+        var slice = this.slice(current, endIndexExclusive);
+        slices.push(slice);
+      }
+      return slices;
+    };
+
     Drawing2D.prototype.drawBezierCurvesParallel = function(vertArray, s, curContext){
-        var t1 = performance.now();
-      
+      var THREAD_COUNT = 6;
+      var SPLIT_COUNT = vertArray.length/THREAD_COUNT;
       var vertArraysToProcess = vertArray.slice(1, vertArray.length-3);
-      var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
-            var thisVertIndex = j+1;
+      var vertArraySlices = vertArraysToProcess.split(SPLIT_COUNT);
+      var computedBezierPoints = [];
+      var t1 = performance.now();
+
+      for (var i = 0; i < vertArraySlices.length; i++) {
+        var points = vertArraySlices[i].mapPar(function(cachedVertArray, j){
+            var thisVertIndex = ((i*vertArraySlices)+(j+1));
             var previousVertArray = vertArray[thisVertIndex-1];
             var nextVertArray = vertArray[thisVertIndex+1];
             var twoAheadVertArray = vertArray[thisVertIndex+2];
@@ -5501,6 +5518,23 @@
             b[3] = [nextVertArray[0], nextVertArray[1]];
             return b;
         });
+        computedBezierPoints.concat(points);
+      };
+
+      // var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
+      //       var thisVertIndex = j+1;
+      //       var previousVertArray = vertArray[thisVertIndex-1];
+      //       var nextVertArray = vertArray[thisVertIndex+1];
+      //       var twoAheadVertArray = vertArray[thisVertIndex+2];
+      //       var b = [];
+      //       b[0] = [cachedVertArray[0], cachedVertArray[1]];
+      //       b[1] = [cachedVertArray[0] + (s * nextVertArray[0] - s * previousVertArray[0]) / 6, 
+      //               cachedVertArray[1] + (s * nextVertArray[1] - s * previousVertArray[1]) / 6];
+      //       b[2] = [nextVertArray[0] + (s * cachedVertArray[0] - s * twoAheadVertArray[0]) / 6, 
+      //               nextVertArray[1] + (s * cachedVertArray[1] - s * twoAheadVertArray[1]) / 6];
+      //       b[3] = [nextVertArray[0], nextVertArray[1]];
+      //       return b;
+      //   });
 
       for(var i = 0; i<computedBezierPoints.length; i++)
            {

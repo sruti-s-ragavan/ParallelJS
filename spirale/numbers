@@ -1,8 +1,2 @@
-Functional Parallel : 
-Object { size: 261615, visits: 2445, time: 2293.6029956314956 }
-
-Functional Sequential : 
-Object { size: 715540, visits: 18830, time: 32239.218557186137 }
-
-Imperative sequential : 
-Object { size: 126880, visits: 2440, time: 291.6307675150438 }
+mapPar : 
+Object { size: 905700, visits: 9057, time: 2730.4154707286098 }

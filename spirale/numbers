@@ -1,2 +1,16 @@
+Sequential : 
+Object { size: 92644, visits: 2438, time: 174.50224284323508 }
+Object { size: 73170, visits: 2439, time: 141.3466323794337 }
+Object { size: 19512, visits: 2439, time: 91.85094721154815 }
+Object { size: 168360, visits: 2440, time: 293.9667961816117 }
+
 mapPar : 
 Object { size: 905700, visits: 9057, time: 2730.4154707286098 }
+
+break into slices of length 6, run slices sequentially, run elements of a slice in parallel.
+Object { size: 125613, visits: 2463, time: 1313.5939798886184 }
+
+8 threads
+Object { size: 224388, visits: 2439, time: 1883.9927007746248 }
+Object { size: 258746, visits: 2441, time: 2223.125934321112 }
+Object { size: 224572, visits: 2441, time: 1966.6737718005022 }

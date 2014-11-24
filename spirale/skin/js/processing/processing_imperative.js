@@ -5487,7 +5487,7 @@
       var t1 = performance.now();
       var b = [], i;
       var vertArrayLength = vertArray.length;
-      for (i = 1; i + 2 < vertArrayLength; i++) {
+      for (i = 1; i < vertArrayLength - 2; i++) {
             cachedVertArray = vertArray[i];
             b[0] = [cachedVertArray[0], cachedVertArray[1]];
             b[1] = [cachedVertArray[0] + (s * vertArray[i + 1][0] - s * vertArray[i - 1][0]) / 6, cachedVertArray[1] +

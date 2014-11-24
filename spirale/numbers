@@ -5,10 +5,9 @@ Object { size: 19512, visits: 2439, time: 91.85094721154815 }
 Object { size: 168360, visits: 2440, time: 293.9667961816117 }
 
 mapPar : 
-Object { size: 905700, visits: 9057, time: 2730.4154707286098 }
-
-break into slices of length 6, run slices sequentially, run elements of a slice in parallel.
-Object { size: 125613, visits: 2463, time: 1313.5939798886184 }
+Object { size: 197721, visits: 2441, time: 3104.7744135779594 }
+Object { size: 122000, visits: 2440, time: 2988.9977555025134 }
+Object { size: 270840, visits: 2440, time: 2874.87764912401 }
 
 8 threads
 Object { size: 224388, visits: 2439, time: 1883.9927007746248 }

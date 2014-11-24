@@ -9,7 +9,26 @@ Object { size: 197721, visits: 2441, time: 3104.7744135779594 }
 Object { size: 122000, visits: 2440, time: 2988.9977555025134 }
 Object { size: 270840, visits: 2440, time: 2874.87764912401 }
 
-8 threads
+Loops in sequence, 8 threads in each loop
+for each slice
+	slice.mapPar(process) // slice length is 8
+
 Object { size: 224388, visits: 2439, time: 1883.9927007746248 }
 Object { size: 258746, visits: 2441, time: 2223.125934321112 }
 Object { size: 224572, visits: 2441, time: 1966.6737718005022 }
+
+Loops inside 
+slices.mapPar({ //8 slices
+	forEach item in slice
+		process
+});
+
+Object { size: 258534, visits: 2439, time: 274.42373977944 } ; 52 parallel calls bailed out
+Object { size: 104920, visits: 2440, time: 213.0831191943173 } ; 16 bail-outs
+
+10 slices
+
+Object { size: 82994, visits: 2441, time: 221.00006569503807 } ; 18 bail-outs
+Object { size: 56189, visits: 2443, time: 161.4903955441356 } ; 24 bailouts
+Object { size: 173758, visits: 6683, time: 8522.770378304722 }
+Object { size: 995256, visits: 10818, time: 18222.886313294588 }

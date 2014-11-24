@@ -5496,15 +5496,18 @@
     };
 
     Drawing2D.prototype.drawBezierCurvesParallel = function(vertArray, s, curContext){
-      var THREAD_COUNT = 8;
-      var SPLIT_COUNT = Math.ceil(vertArray.length/THREAD_COUNT);
+      var THREAD_COUNT = 10;
+      var SLICE_LENGTH = Math.ceil(vertArray.length/THREAD_COUNT);
       var vertArraysToProcess = vertArray.slice(1, vertArray.length-3);
-      var slices = vertArraysToProcess.split(SPLIT_COUNT);
+      var slices = vertArraysToProcess.split(THREAD_COUNT);
       var computedBezierPoints = [];
 
       var t1 = performance.now();
-      var computedBezierPoints = vertArraysToProcess.mapPar(function(cachedVertArray, j){
-            var thisVertIndex = j+1;
+      var computedBezierPoints = slices.mapPar(function(slice, i){
+        var array = [];
+        for(var j=0; j<slice.length; j++){
+          var thisVertIndex = (i*SLICE_LENGTH) + j+1;
+          var cachedVertArray = slice[j];
             var previousVertArray = vertArray[thisVertIndex-1];
             var nextVertArray = vertArray[thisVertIndex+1];
             var twoAheadVertArray = vertArray[thisVertIndex+2];
@@ -5515,12 +5518,16 @@
             b[2] = [nextVertArray[0] + (s * cachedVertArray[0] - s * twoAheadVertArray[0]) / 6, 
                     nextVertArray[1] + (s * cachedVertArray[1] - s * twoAheadVertArray[1]) / 6];
             b[3] = [nextVertArray[0], nextVertArray[1]];
-            return b;
-        });
+            array.push(b);
+        }
+        return array;
+      });
+          
 
       for(var i = 0; i<computedBezierPoints.length; i++)
       {
-          var b = computedBezierPoints[i];
+        for(var j = 0; j<computedBezierPoints[i].length; j++)
+          var b = computedBezierPoints[i][j];
           curContext.bezierCurveTo(b[1][0], b[1][1], b[2][0], b[2][1], b[3][0], b[3][1]);
       }
 

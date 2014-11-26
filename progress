@@ -1,0 +1,49 @@
+Here is the summary of my git logs [https://github.com/srutis90/ParallelJS/] & other related work [12 Nov - 26 Nov]
+
+1. Spent some time trying to understand the Tearable Cloth physics and the integration computations involved. 
+	http://gamedevelopment.tutsplus.com/tutorials/simulate-tearable-cloth-and-ragdolls-with-simple-verlet-integration--gamedev-519
+
+2. Refactor code to a structure that will allow parallelizing the computation of points and decouple constraint solving and position computation. 
+	
+	a. Tried separating acceleration computation and position computation to see if there was a speed up in one separately- this caused jagged lines - a logical error. 
+	
+	b. Earlier we iterated over points and for each point we tried resolving constraints. Tried changing it to a form where we iterated over a list of constraints. This was to eliminate some bailouts due to referencing some globals. 
+	
+	c. Changed parts of code to be done in parallel to see if the parallelization gives some gains.  This also included combinations of sequential and parallel. 
+	
+	d. The part that wasn't really laggy was to put mapPar inside parallel loops, constraining the number of threads (in theory). So, decided to continue with this combination for the rest of the experiment. 
+
+	e. There were still some bail outs due to global access of mouse positions (though it was read-only). passed those in as parameters to the function called in parallel to cheat JIT to think there is no global change - this minimised bail outs.
+	
+	f. To ensure this was the case, wrote a toy program (experiments.js) with similar access patterns, this didn't bail out. So, there is not much scope to eliminate further bail-outs but the number seemed minimal when I closed and opened browser each time. 
+
+	There are still not much gains from parallelism, though better than what we saw with simply in parallel from last weeks' results. 
+
+3. Picked up Processing.js - try out Cosmin's suggestions of combinations of sequential and parallel. 
+	Original : 
+		LargeArray.mapPar(function(){
+			//do something
+		});
+
+	Changed code to slice the large array into smaller chunks to restrict the number of parallel threads (theroretically). 
+		a. Break into NO_OF_THREADS sized chunks. Process each element of this chunk in parallel. The chunks themselves are done in sequence. 
+			
+			SPLIT <- LarrayArray.Length / NO_OF_THREADS
+			chunks <- slice_into_chunks (LargeArray, SPLIT)
+			foreach chunk in chunks do
+				chunk.mapPar(function(){
+					do domething
+				});
+			end
+
+		b. Similarly change to split into NO_OF_THREADS threads run these in parallel. 
+
+			chunks <- slice_into_chunks (LargeArray, SPLIT)
+			chunks.mapPar(function(){
+				foreach element in chunk
+					do something
+			});
+
+		Tried this for varying sizes of threads, not much gain. Looks like a lot of array indexing that might have to be removed. In the past we have seen array indexing has been quite expensive.
+
+4. Also went back to Jas' examples to see if there are things we might be missing, he showed positive results after all, even comparing imperative for loops with functional parallel. Not much specific pointers though !

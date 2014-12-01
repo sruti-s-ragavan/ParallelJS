@@ -1,27 +1,4 @@
-/*
-Copyright (c) 2013 Suffick at Codepen (http://codepen.io/suffick) and GitHub (https://github.com/suffick)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "ANYS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
-
-// settings
-
+var T = TypedObject;
 var physics_accuracy = 3,
     mouse_influence = 20,
     mouse_cut = 5,
@@ -55,8 +32,21 @@ var canvas,
         x: 0,
         y: 0,
         px: 0,
-        py: 0
+        py: 0,
     };
+
+var TPoint = new T.StructType({
+    x : T.float32,
+    y : T.float32,
+    px : T.float32,
+    py : T.float32,
+    ax : T.float32,
+    ay : T.float32,
+    anchor : T.int8, //subsitute for a boolean type :-(
+    
+    constraints : new T.ArrayType(T.Object, 2)
+});
+
 
 var Point = function (x, y) {
 
@@ -69,10 +59,9 @@ var Point = function (x, y) {
     this.anchor = false;
 
     this.constraints = [];
-    this.remove = false;
 };
 
-Point.prototype.simulate = function (options) {
+TPoint.prototype.simulate = function (options) {
     this.fix_bounds(boundsx, boundsy);
     if(this.anchor) return;
 
@@ -108,7 +97,7 @@ Point.prototype.simulate = function (options) {
     this.ay = this.ax = 0;
 };
 
-Point.prototype.draw = function () {
+TPoint.prototype.draw = function () {
 
     if (this.constraints.length <= 0) return;
 
@@ -116,12 +105,12 @@ Point.prototype.draw = function () {
     while (i--) this.constraints[i].draw();
 };
 
-Point.prototype.resolve_constraints = function () {
+TPoint.prototype.resolve_constraints = function () {
     var i = this.constraints.length;
     while (i--) this.constraints[i].resolve();
 };
 
-Point.prototype.fix_bounds = function(bx, by){
+TPoint.prototype.fix_bounds = function(bx, by){
     if(this.anchor) return;
     if (this.x > bx) {
         this.x = 2 * bx - this.x;
@@ -136,23 +125,30 @@ Point.prototype.fix_bounds = function(bx, by){
     }
 };
 
-Point.prototype.attach = function (point) {
+TPoint.prototype.attach = function (point) {
     var c = new Constraint(this, point);
     this.constraints.push(c);
     return c;
 };
 
-Point.prototype.remove_constraint = function (lnk) {
+TPoint.prototype.remove_constraint = function (lnk) {
     var i = this.constraints.length;
     while (i--)
         if (this.constraints[i] == lnk) this.constraints.splice(i, 1);
     lnk.remove = true;
 };
 
-Point.prototype.accelerate = function (x, y) {
+TPoint.prototype.accelerate = function (x, y) {
     this.ax += x;
     this.ay += y;
 };
+
+var TConstraint = new T.StructType({
+    p1 : T.Object,
+    p2 : T.Object,
+    length : T.int32,
+    remove : T.int8
+});
 
 var Constraint = function (p1, p2) {
     this.p1 = p1;
@@ -161,13 +157,13 @@ var Constraint = function (p1, p2) {
     this.remove = false;
 };
 
-Point.prototype.move =  function(dx, dy){
+TPoint.prototype.move =  function(dx, dy){
     if(this.anchor) return;
     this.x += dx;
     this.y += dy;
 };
     
-Constraint.prototype.resolve = function () {
+TConstraint.prototype.resolve = function () {
 
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
@@ -185,8 +181,7 @@ Constraint.prototype.resolve = function () {
     this.p2.move(-px, -py);
 };
 
-Constraint.prototype.draw = function () {
-
+TConstraint.prototype.draw = function () {
     ctx.moveTo(this.p1.x, this.p1.y);
     ctx.lineTo(this.p2.x, this.p2.y);
 };
@@ -203,27 +198,37 @@ var slice = function(arr, count){
     return slices;
 };
 
+TPoint.prototype.init = function(x, y){
+    this.x = x;
+    this.y = y;
+    this.px = x;
+    this.py = y;
+};
+
+var size = (cloth_height + 1) * (cloth_width + 1);
+var PointArray = new T.ArrayType(TPoint, size);
+var constraintLength = 2*cloth_width*cloth_height + cloth_width + cloth_height;
+var ConstraintArray = new T.ArrayType(TConstraint, constraintLength);
 
 var Cloth = function () {
 
-    this.points = [];
-    this.constraints_list = [];
+    this.points = new PointArray();
+    this.constraints_list = new ConstraintArray;
 
     var start_x = canvas.width / 2 - cloth_width * spacing / 2;
 
-    for (var y = 0; y <= cloth_height; y++) {
+    for(var i=0 ; i<size; i++){
+        var y = i % (cloth_height+1);
+        var x = i-(y * (cloth_height + 1));
 
-        for (var x = 0; x <= cloth_width; x++) {
-
-            var p = new Point(start_x + x * spacing, start_y + y * spacing);
-            p.anchor = (y == 0);
-
-            x != 0 && this.attach(p, this.points[this.points.length - 1]);
-            y != 0 && this.attach(p, this.points[x + (y - 1) * (cloth_width + 1)])
-
-            this.points.push(p);
-        }
+        var p = this.points[i];
+        p.init(start_x + x*spacing, start_y + y*spacing);
+        
+        x != 0 && this.attach(p, this.points[this.points.length - 1]);
+        y != 0 && this.attach(p, this.points[x + (y - 1) * (cloth_width + 1)]);
     }
+
+    debugger;
     this.slices = slice(this.points, 10);
 };
 

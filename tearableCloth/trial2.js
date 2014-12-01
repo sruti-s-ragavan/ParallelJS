@@ -125,12 +125,6 @@ TPoint.prototype.fix_bounds = function(bx, by){
     }
 };
 
-TPoint.prototype.attach = function (point) {
-    var c = new Constraint(this, point);
-    this.constraints.push(c);
-    return c;
-};
-
 TPoint.prototype.remove_constraint = function (lnk) {
     var i = this.constraints.length;
     while (i--)
@@ -213,28 +207,44 @@ var ConstraintArray = new T.ArrayType(TConstraint, constraintLength);
 var Cloth = function () {
 
     this.points = new PointArray();
-    this.constraints_list = new ConstraintArray;
+    this.constraints_list = new ConstraintArray();
+    var constraintIndex = 0;
 
     var start_x = canvas.width / 2 - cloth_width * spacing / 2;
 
-    for(var i=0 ; i<size; i++){
-        var y = i % (cloth_height+1);
-        var x = i-(y * (cloth_height + 1));
-
+for (var y = 0; y <= cloth_height; y++) {
+    for (var x = 0; x <= cloth_width; x++) {
+        var i = y * (cloth_height+1) + x;
         var p = this.points[i];
         p.init(start_x + x*spacing, start_y + y*spacing);
         
-        x != 0 && this.attach(p, this.points[this.points.length - 1]);
-        y != 0 && this.attach(p, this.points[x + (y - 1) * (cloth_width + 1)]);
-    }
+        var pt_constraints = [];
+        if(x != 0){
+            var c = this.constraints_list[constraintIndex++];
+            c.init(p, this.points[i-1]);
+            pt_constraints.push(c);
+        }
 
-    debugger;
+        if(y != 0){
+            var c = this.constraints_list[constraintIndex++];
+            c.init(p, this.points[i-(cloth_height + 1)]);
+            pt_constraints.push(c);
+        }
+        p.constrained_by(pt_constraints);
+     }
+ }
     this.slices = slice(this.points, 10);
 };
 
-Cloth.prototype.attach = function(p1, p2){
-    var constraint = p1.attach(p2);
-    this.constraints_list.push(constraint);
+TPoint.prototype.constrained_by = function(constraints){
+    for (var i = 0; i < constraints.length; i++) {
+        this.constraints[i] = constraints[i];
+    }
+};
+
+TConstraint.prototype.init = function(p1, p2){
+    this.p1 = p1;
+    this.p2 = p2;
 };
 
 Cloth.prototype.update = function () {

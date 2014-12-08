@@ -37,7 +37,7 @@ var canvas,
 
 var Point = function (xIndex, yIndex) {
 
-    this.xIndex = xIndex,
+    this.xIndex = xIndex;
     this.yIndex = yIndex;
 
     this.vx = 0;
@@ -127,10 +127,10 @@ Point.prototype.resolve_constraints = function () {
     }
 };
 
-Point.prototype.attach = function (point) {
+Point.prototype.attach = function (point, direction) {
 
     this.constraints.push(
-        new Constraint(this, point)
+        new Constraint(this, point, direction)
     );
 };
 
@@ -152,10 +152,10 @@ Point.prototype.pin = function (pinx, piny) {
     this.pin_y = piny;
 };
 
-var Constraint = function (p1, p2) {
-
+var Constraint = function (p1, p2, direction) {
     this.p1 = p1;
     this.p2 = p2;
+    this.direction = direction;
     this.length = spacing;
 };
 
@@ -168,8 +168,8 @@ Constraint.prototype.resolve = function () {
 
     if (dist > tear_distance) this.p1.remove_constraint(this);
 
-    var px = diff_x * diff * 0.5;
-    var py = diff_y * diff * 0.5;
+    var px = this.direction * diff_x * diff * 0.5;
+    var py = this.direction * diff_y * diff * 0.5;
 
     this.p1.x += px;
     this.p1.y += py;
@@ -188,58 +188,53 @@ var Cloth = function () {
     this.points = [];
     var start_x = canvas.width / 2 - cloth_width * spacing / 2;
 
-    //This section can be made parallel with some fundamental data structure changes.
-    // But there could be ugly index manipulation. TypedObject arrays "might" help.
-    // How do you specify reference type in typed objects?
-    // Constraint - Point relationships are two-ways.
+    for (var y = 0; y <= cloth_height; y++) {
+        var row = [];
+        for (var x = 0; x <= cloth_width; x++) {
+            var p = new Point(x, y); // Index
+            p.initCanvasPosition(start_x + x * spacing, start_y + y * spacing);
+            row.push(p);
+        }
+        this.points.push(row);
+    }
+    this.initializeConstraints();
+};
 
-    for (var yIndex = 0; yIndex <= cloth_height; yIndex++) {
-        for (var xIndex = 0; xIndex <= cloth_width; xIndex++) {
-            var p = new Point(xIndex, yIndex);
-            p.initCanvasPosition(start_x + xIndex * spacing, start_y + yIndex * spacing);
-
-            xIndex != 0 && p.attach(this.points[this.points.length - 1]);
-            yIndex == 0 && p.pin(p.x, p.y);
-            yIndex != 0 && p.attach(this.points[xIndex + (yIndex - 1) * (cloth_width + 1)])
-
-            this.points.push(p);
+Cloth.prototype.initializeConstraints = function(){
+    for(var row=0 ; row<=cloth_height; row++) {
+        for (var col = 0; col <= cloth_width; col++) {
+            var p = this.points[row][col];
+            p.yIndex == 0 && p.pin(p.x, p.y);
+            p.xIndex != 0 && p.attach(this.points[row][col - 1], 1);
+            p.yIndex != 0 && p.attach(this.points[row - 1][col], 1);
         }
     }
 };
 
 Cloth.prototype.update = function () {
+    var times = physics_accuracy;
 
-    var i = physics_accuracy;
-
-    while (i--) {
-        var p = this.points.length;
-        while (p--) this.points[p].resolve_constraints();
+    while (times--) {
+        for(var i=0 ; i<=cloth_height; i++)
+            for(var j=0; j<=cloth_width; j++)
+                this.points[i][j].resolve_constraints();
     }
     this.updateAllPoints();
 };
 
-var Metrics = {
-    times : 0,
-    time : 0,
-    size : 0
-};
-
 Cloth.prototype.updateAllPoints = function(){
-    var t1 = performance.now();
-    var p = this.points.length;
-    while (p--) this.points[p].update(.016);
-    var t2 = performance.now();
-    Metrics.times ++;
-    Metrics.size += this.points.length;
-    Metrics.time += t2-t1;
+    for(var i=0 ; i<=cloth_height; i++)
+        for(var j=0; j<=cloth_width; j++)
+            this.points[i][j].update(.016);
 }
 
 Cloth.prototype.draw = function () {
 
     ctx.beginPath();
 
-    var i = cloth.points.length;
-    while (i--) cloth.points[i].draw();
+    for(var i=0 ; i<=cloth_height; i++)
+        for(var j=0; j<=cloth_width; j++)
+            this.points[i][j].draw();
 
     ctx.stroke();
 };

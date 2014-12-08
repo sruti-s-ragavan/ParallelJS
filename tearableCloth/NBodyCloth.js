@@ -75,9 +75,9 @@ Point.prototype.update = function (delta) {
 
     this.add_force(0, gravity);
 
-    deltaSquared = delta * delta;
-    nx = this.x + ((this.x - this.px) * .99) + ((this.vx / 2) * deltaSquared);
-    ny = this.y + ((this.y - this.py) * .99) + ((this.vy / 2) * deltaSquared);
+    var deltaSquared = delta * delta;
+    var nx = this.x + ((this.x - this.px) * .99) + ((this.vx / 2) * deltaSquared);
+    var ny = this.y + ((this.y - this.py) * .99) + ((this.vy / 2) * deltaSquared);
 
     this.px = this.x;
     this.py = this.y;
@@ -99,7 +99,6 @@ Point.prototype.draw = function () {
 Point.prototype.resolve_constraints = function () {
 
     if (this.pin_x != null && this.pin_y != null) {
-
         this.x = this.pin_x;
         this.y = this.pin_y;
         return;
@@ -109,20 +108,14 @@ Point.prototype.resolve_constraints = function () {
     while (i--) this.constraints[i].resolve();
 
     if (this.x > boundsx) {
-
         this.x = 2 * boundsx - this.x;
-
     } else if (this.x < 1) {
-
         this.x = 2 - this.x;
     }
 
     if (this.y > boundsy) {
-
         this.y = 2 * boundsy - this.y;
-
     } else if (this.y < 1) {
-
         this.y = 2 - this.y;
     }
 };
@@ -135,14 +128,12 @@ Point.prototype.attach = function (point, direction) {
 };
 
 Point.prototype.remove_constraint = function (lnk) {
-
     var i = this.constraints.length;
     while (i--)
         if (this.constraints[i] == lnk) this.constraints.splice(i, 1);
 };
 
 Point.prototype.add_force = function (x, y) {
-
     this.vx += x;
     this.vy += y;
 };
@@ -160,7 +151,6 @@ var Constraint = function (p1, p2, direction) {
 };
 
 Constraint.prototype.resolve = function () {
-
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
@@ -178,13 +168,11 @@ Constraint.prototype.resolve = function () {
 };
 
 Constraint.prototype.draw = function () {
-
     ctx.moveTo(this.p1.x, this.p1.y);
     ctx.lineTo(this.p2.x, this.p2.y);
 };
 
 var Cloth = function () {
-
     this.points = [];
     var start_x = canvas.width / 2 - cloth_width * spacing / 2;
 

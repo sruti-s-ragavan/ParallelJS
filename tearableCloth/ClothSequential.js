@@ -213,10 +213,10 @@ var Cloth = function () {
         for (var x = 0; x <= cloth_width; x++) {
             var p = new Point(start_x + x * spacing, start_y + y * spacing);
 
+            y != 0 && p.attach(this.points[x + (y - 1) * (cloth_width + 1)])
             x != 0 && p.attach(this.points[this.points.length - 1]);
             y == 0 && p.pin(p.x, p.y);
-            y != 0 && p.attach(this.points[x + (y - 1) * (cloth_width + 1)])
-
+            
             this.points.push(p);
         }
     }

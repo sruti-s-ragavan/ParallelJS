@@ -55,7 +55,7 @@ Point.prototype.initCanvasPosition = function(x, y){
     this.py = y;
 };
 
-Point.prototype.update = function (delta) {
+Point.prototype.update = function ( delta) {
 
     if (mouse.down) {
 
@@ -76,6 +76,11 @@ Point.prototype.update = function (delta) {
     this.add_force(0, gravity);
 
     var deltaSquared = delta * delta;
+
+    //x(t+dt) = x(t) + v(t)dt + 1/2[a(t)(dt*dt)]
+    // compute a(t+dt)
+    //v(t+dt) = v(t) + 1/2[a(t+dt)+a(t)]dt
+
     var nx = this.x + ((this.x - this.px) * .99) + ((this.vx / 2) * deltaSquared);
     var ny = this.y + ((this.y - this.py) * .99) + ((this.vy / 2) * deltaSquared);
 
@@ -98,6 +103,9 @@ Point.prototype.draw = function () {
 
 Point.prototype.resolve_constraints = function () {
 
+    //this.dx = 0;
+    //this.dy = 0;
+
     if (this.pin_x != null && this.pin_y != null) {
         this.x = this.pin_x;
         this.y = this.pin_y;
@@ -106,6 +114,12 @@ Point.prototype.resolve_constraints = function () {
 
     var i = this.constraints.length;
     while (i--) this.constraints[i].resolve();
+
+    var i = this.constraints.length;
+    while (i--) {
+        this.x += this.constraints[i].dx;
+        this.y += this.constraints[i].dy;
+    }
 
     if (this.x > boundsx) {
         this.x = 2 * boundsx - this.x;
@@ -128,9 +142,9 @@ Point.prototype.attach = function (point, direction) {
 };
 
 Point.prototype.remove_constraint = function (lnk) {
-    var i = this.constraints.length;
+    i = this.constraints.length;
     while (i--)
-        if (this.constraints[i] == lnk) this.constraints.splice(i, 1);
+        if(this.constraints[i].remove == true) this.constraints.splice(i, 1);
 };
 
 Point.prototype.add_force = function (x, y) {
@@ -151,20 +165,22 @@ var Constraint = function (p1, p2, direction) {
 };
 
 Constraint.prototype.resolve = function () {
+    // x' : position of points before applying constraints
+    //d1 = x2(t) - x1(t)
+    //d2 = || d1 ||
+    //d3 = (d2 - r) / d2
+    //x1(t+dt) = x'(t+dt)  + 0.5(d1 * d3)
+    //x2(t+dt) = x'(t+dt)  - 0.5(d1 * d3)
+    if(this.direction == -1) return;
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
         diff = (this.length - dist) / dist;
 
-    if (dist > tear_distance) this.p1.remove_constraint(this);
+    if (dist > tear_distance) this.remove = true;
 
-    var px = this.direction * diff_x * diff * 0.5;
-    var py = this.direction * diff_y * diff * 0.5;
-
-    this.p1.x += px;
-    this.p1.y += py;
-    this.p2.x -= px;
-    this.p2.y -= py;
+    this.dx += this.direction * diff_x * diff * 0.5;
+    this.dy += this.direction * diff_y * diff * 0.5;
 };
 
 Constraint.prototype.draw = function () {
@@ -193,8 +209,19 @@ Cloth.prototype.initializeConstraints = function(){
         for (var col = 0; col <= cloth_width; col++) {
             var p = this.points[row][col];
             p.yIndex == 0 && p.pin(p.x, p.y);
-            p.xIndex != 0 && p.attach(this.points[row][col - 1], 1);
-            p.yIndex != 0 && p.attach(this.points[row - 1][col], 1);
+
+            //p.xIndex != cloth_width && p.attach(this.points[row][col + 1], -1);
+            //p.yIndex != cloth_height && p.attach(this.points[row + 1][col], -1);
+
+            if(p.xIndex != 0){
+                p.attach(this.points[row][col - 1], 1);
+                this.points[row][col-1].attach(p, -1);
+            }
+
+            if(p.yIndex != 0){
+                p.attach(this.points[row - 1][col], 1);
+                this.points[row-1][col].attach(p, -1);
+            }
         }
     }
 };

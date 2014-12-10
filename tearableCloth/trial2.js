@@ -1,4 +1,27 @@
-var T = TypedObject;
+/*
+ Copyright (c) 2013 Suffick at Codepen (http://codepen.io/suffick) and GitHub (https://github.com/suffick)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "ANYS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
+
+// settings
+
 var physics_accuracy = 3,
     mouse_influence = 20,
     mouse_cut = 5,
@@ -19,7 +42,7 @@ window.requestAnimFrame =
     window.msRequestAnimationFrame ||
     function (callback) {
         window.setTimeout(callback, 1000 / 60);
-};
+    };
 
 var canvas,
     ctx,
@@ -32,21 +55,8 @@ var canvas,
         x: 0,
         y: 0,
         px: 0,
-        py: 0,
+        py: 0
     };
-
-var TPoint = new T.StructType({
-    x : T.float32,
-    y : T.float32,
-    px : T.float32,
-    py : T.float32,
-    ax : T.float32,
-    ay : T.float32,
-    anchor : T.int8, //subsitute for a boolean type :-(
-    
-    constraints : new T.ArrayType(T.Object, 2)
-});
-
 
 var Point = function (x, y) {
 
@@ -59,9 +69,10 @@ var Point = function (x, y) {
     this.anchor = false;
 
     this.constraints = [];
+    this.remove = false;
 };
 
-TPoint.prototype.simulate = function (options) {
+Point.prototype.simulate = function (options) {
     this.fix_bounds(boundsx, boundsy);
     if(this.anchor) return;
 
@@ -97,7 +108,7 @@ TPoint.prototype.simulate = function (options) {
     this.ay = this.ax = 0;
 };
 
-TPoint.prototype.draw = function () {
+Point.prototype.draw = function () {
 
     if (this.constraints.length <= 0) return;
 
@@ -105,12 +116,12 @@ TPoint.prototype.draw = function () {
     while (i--) this.constraints[i].draw();
 };
 
-TPoint.prototype.resolve_constraints = function () {
+Point.prototype.resolve_constraints = function () {
     var i = this.constraints.length;
     while (i--) this.constraints[i].resolve();
 };
 
-TPoint.prototype.fix_bounds = function(bx, by){
+Point.prototype.fix_bounds = function(bx, by){
     if(this.anchor) return;
     if (this.x > bx) {
         this.x = 2 * bx - this.x;
@@ -125,24 +136,23 @@ TPoint.prototype.fix_bounds = function(bx, by){
     }
 };
 
-TPoint.prototype.remove_constraint = function (lnk) {
+Point.prototype.attach = function (point) {
+    var c = new Constraint(this, point);
+    this.constraints.push(c);
+    return c;
+};
+
+Point.prototype.remove_constraint = function (lnk) {
     var i = this.constraints.length;
     while (i--)
         if (this.constraints[i] == lnk) this.constraints.splice(i, 1);
     lnk.remove = true;
 };
 
-TPoint.prototype.accelerate = function (x, y) {
+Point.prototype.accelerate = function (x, y) {
     this.ax += x;
     this.ay += y;
 };
-
-var TConstraint = new T.StructType({
-    p1 : T.Object,
-    p2 : T.Object,
-    length : T.int32,
-    remove : T.int8
-});
 
 var Constraint = function (p1, p2) {
     this.p1 = p1;
@@ -151,13 +161,13 @@ var Constraint = function (p1, p2) {
     this.remove = false;
 };
 
-TPoint.prototype.move =  function(dx, dy){
+Point.prototype.move =  function(dx, dy){
     if(this.anchor) return;
     this.x += dx;
     this.y += dy;
 };
-    
-TConstraint.prototype.resolve = function () {
+
+Constraint.prototype.resolve = function () {
 
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
@@ -175,7 +185,8 @@ TConstraint.prototype.resolve = function () {
     this.p2.move(-px, -py);
 };
 
-TConstraint.prototype.draw = function () {
+Constraint.prototype.draw = function () {
+
     ctx.moveTo(this.p1.x, this.p1.y);
     ctx.lineTo(this.p2.x, this.p2.y);
 };
@@ -192,59 +203,33 @@ var slice = function(arr, count){
     return slices;
 };
 
-TPoint.prototype.init = function(x, y){
-    this.x = x;
-    this.y = y;
-    this.px = x;
-    this.py = y;
-};
-
-var size = (cloth_height + 1) * (cloth_width + 1);
-var PointArray = new T.ArrayType(TPoint, size);
-var constraintLength = 2*cloth_width*cloth_height + cloth_width + cloth_height;
-var ConstraintArray = new T.ArrayType(TConstraint, constraintLength);
 
 var Cloth = function () {
 
-    this.points = new PointArray();
-    this.constraints_list = new ConstraintArray();
-    var constraintIndex = 0;
+    this.points = [];
+    this.constraints_list = [];
 
     var start_x = canvas.width / 2 - cloth_width * spacing / 2;
 
-for (var y = 0; y <= cloth_height; y++) {
-    for (var x = 0; x <= cloth_width; x++) {
-        var i = y * (cloth_height+1) + x;
-        var p = this.points[i];
-        p.init(start_x + x*spacing, start_y + y*spacing);
-        
-        var pt_constraints = [];
-        if(x != 0){
-            var c = this.constraints_list[constraintIndex++];
-            c.init(p, this.points[i-1]);
-            pt_constraints.push(c);
-        }
+    for (var y = 0; y <= cloth_height; y++) {
 
-        if(y != 0){
-            var c = this.constraints_list[constraintIndex++];
-            c.init(p, this.points[i-(cloth_height + 1)]);
-            pt_constraints.push(c);
+        for (var x = 0; x <= cloth_width; x++) {
+
+            var p = new Point(start_x + x * spacing, start_y + y * spacing);
+            p.anchor = (y == 0);
+
+            x != 0 && this.attach(p, this.points[this.points.length - 1]);
+            y != 0 && this.attach(p, this.points[x + (y - 1) * (cloth_width + 1)])
+
+            this.points.push(p);
         }
-        p.constrained_by(pt_constraints);
-     }
- }
+    }
     this.slices = slice(this.points, 10);
 };
 
-TPoint.prototype.constrained_by = function(constraints){
-    for (var i = 0; i < constraints.length; i++) {
-        this.constraints[i] = constraints[i];
-    }
-};
-
-TConstraint.prototype.init = function(p1, p2){
-    this.p1 = p1;
-    this.p2 = p2;
+Cloth.prototype.attach = function(p1, p2){
+    var constraint = p1.attach(p2);
+    this.constraints_list.push(constraint);
 };
 
 Cloth.prototype.update = function () {
@@ -268,14 +253,14 @@ Cloth.prototype.update = function () {
         gravity : gravity,
         delta : delta_time
     };
-    
+
     for(var i=0; i<this.slices.length; i++){
-        var slice = this.slices[i];
-        console.log("A2");
-        slice.mapPar(function(pt){
-            pt.simulate(options);
+
+        this.slices.map(function(slice){
+            for(var s = 0; s<slice.length; s++)
+                slice[s].simulate(options);
         });
-        console.log("B2");
+
     }
     this.recomputeConstraints();
 };
@@ -308,14 +293,14 @@ function simulateNextTime() {
     requestAnimFrame(simulateNextTime);
 }
 var initMouseEvents = function(){
-     canvas.onmousedown = function (e) {
+    canvas.onmousedown = function (e) {
         mouse.button = e.which;
         mouse.px = mouse.x;
         mouse.py = mouse.y;
         var rect = canvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left,
-        mouse.y = e.clientY - rect.top,
-        mouse.down = true;
+            mouse.y = e.clientY - rect.top,
+            mouse.down = true;
         e.preventDefault();
     };
 
@@ -329,8 +314,8 @@ var initMouseEvents = function(){
         mouse.py = mouse.y;
         var rect = canvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left,
-        mouse.y = e.clientY - rect.top,
-        e.preventDefault();
+            mouse.y = e.clientY - rect.top,
+            e.preventDefault();
     };
 
     canvas.oncontextmenu = function (e) {
@@ -341,13 +326,13 @@ var initMouseEvents = function(){
 var initCanvas = function(){
     boundsx = canvas.width - 1;
     boundsy = canvas.height - 1;
-    ctx.strokeStyle = '#888';    
+    ctx.strokeStyle = '#888';
 };
 
 function init() {
 
-   initMouseEvents();
-   initCanvas();
+    initMouseEvents();
+    initCanvas();
     cloth = new Cloth();
     simulateNextTime();
 }

@@ -119,6 +119,8 @@ Point.prototype.resolve_constraints = function () {
     while (i--) {
         this.x += this.constraints[i].dx;
         this.y += this.constraints[i].dy;
+        if(this.constraints[i].remove)
+            this.constraints.splice(i, 1);
     }
 
     if (this.x > boundsx) {

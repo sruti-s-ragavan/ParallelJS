@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="108a2b58-060c-4285-8e48-7d8dbf674424" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/ClothSequential.js" afterPath="$PROJECT_DIR$/tearableCloth/ClothSequential.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" afterPath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/trial2.js" afterPath="$PROJECT_DIR$/tearableCloth/trial2.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ParallelJS.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,8 +31,8 @@
           <file leaf-file-name="NBodyCloth.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5288303" vertical-offset="3759" max-vertical-offset="5440">
-                  <caret line="240" column="16" selection-start-line="240" selection-start-column="16" selection-end-line="240" selection-end-column="16" />
+                <state vertical-scroll-proportion="0.61285007" vertical-offset="2671" max-vertical-offset="5474">
+                  <caret line="179" column="7" selection-start-line="179" selection-start-column="7" selection-end-line="179" selection-end-column="7" />
                   <folding />
                 </state>
               </provider>
@@ -349,8 +346,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5288303" vertical-offset="3759" max-vertical-offset="5440">
-          <caret line="240" column="16" selection-start-line="240" selection-start-column="16" selection-end-line="240" selection-end-column="16" />
+        <state vertical-scroll-proportion="0.61285007" vertical-offset="2671" max-vertical-offset="5474">
+          <caret line="179" column="7" selection-start-line="179" selection-start-column="7" selection-end-line="179" selection-end-column="7" />
           <folding />
         </state>
       </provider>

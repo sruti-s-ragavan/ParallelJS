@@ -148,27 +148,36 @@ var Constraint = function (p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
     this.length = spacing;
+
+    this.remove = false;
+    this.dx = 0;
+    this.dy = 0;
 };
 
 Constraint.prototype.resolve = function (pt) {
-    if(pt == this.p2) return;
+    if(pt == this.p1){
+        this.p1.x += this.dx;
+        this.p1.y += this.dy;
+        if(this.remove)
+            this.p1.remove_constraint(this);
+        return;
+    };
+
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
         diff = (this.length - dist) / dist;
 
     if (dist > tear_distance) {
-        this.p1.remove_constraint(this);
+        this.remove = true;
         this.p2.remove_constraint(this);
     }
 
-    var px = diff_x * diff * 0.5;
-    var py = diff_y * diff * 0.5;
+    this.dx = diff_x * diff * 0.5;
+    this.dy = diff_y * diff * 0.5;
 
-    this.p1.x += px;
-    this.p1.y += py;
-    this.p2.x -= px;
-    this.p2.y -= py;
+    this.p2.x -= this.dx;
+    this.p2.y -= this.dy;
 };
 
 Constraint.prototype.draw = function () {

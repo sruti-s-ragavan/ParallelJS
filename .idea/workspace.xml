@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="108a2b58-060c-4285-8e48-7d8dbf674424" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" afterPath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ParallelJS.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,8 +32,8 @@
           <file leaf-file-name="NBodyCloth.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.94398683" vertical-offset="4306" max-vertical-offset="4981">
-                  <caret line="287" column="2" selection-start-line="287" selection-start-column="2" selection-end-line="287" selection-end-column="2" />
+                <state vertical-scroll-proportion="0.42339373" vertical-offset="814" max-vertical-offset="5066">
+                  <caret line="63" column="64" selection-start-line="63" selection-start-column="64" selection-end-line="63" selection-end-column="64" />
                   <folding />
                 </state>
               </provider>
@@ -365,8 +366,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.94398683" vertical-offset="4306" max-vertical-offset="4981">
-          <caret line="287" column="2" selection-start-line="287" selection-start-column="2" selection-end-line="287" selection-end-column="2" />
+        <state vertical-scroll-proportion="0.42339373" vertical-offset="814" max-vertical-offset="5066">
+          <caret line="63" column="64" selection-start-line="63" selection-start-column="64" selection-end-line="63" selection-end-column="64" />
           <folding />
         </state>
       </provider>

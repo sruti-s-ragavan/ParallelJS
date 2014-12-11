@@ -93,7 +93,8 @@ Point.prototype.draw = function () {
     if (this.constraints.length <= 0) return;
 
     var i = this.constraints.length;
-    while (i--) this.constraints[i].draw();
+    while (i--)
+        if(this.constraints[i].p1 == this) this.constraints[i].draw();
 };
 
 Point.prototype.resolve_constraints = function () {
@@ -105,7 +106,7 @@ Point.prototype.resolve_constraints = function () {
     }
 
     var i = this.constraints.length;
-    while (i--) this.constraints[i].resolve();
+    while (i--) this.constraints[i].resolve(this);
 
     if (this.x > boundsx) {
         this.x = 2 * boundsx - this.x;
@@ -122,9 +123,9 @@ Point.prototype.resolve_constraints = function () {
 
 Point.prototype.attach = function (point) {
 
-    this.constraints.push(
-        new Constraint(this, point)
-    );
+    var c = new Constraint(this, point);
+    this.constraints.push(c);
+    point.constraints.push(c);
 };
 
 Point.prototype.remove_constraint = function (lnk) {
@@ -149,13 +150,17 @@ var Constraint = function (p1, p2) {
     this.length = spacing;
 };
 
-Constraint.prototype.resolve = function () {
+Constraint.prototype.resolve = function (pt) {
+    if(pt == this.p2) return;
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,
         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
         diff = (this.length - dist) / dist;
 
-    if (dist > tear_distance) this.p1.remove_constraint(this);
+    if (dist > tear_distance) {
+        this.p1.remove_constraint(this);
+        this.p2.remove_constraint(this);
+    }
 
     var px = diff_x * diff * 0.5;
     var py = diff_y * diff * 0.5;

@@ -120,10 +120,10 @@ Point.prototype.resolve_constraints = function () {
     }
 };
 
-Point.prototype.attach = function (point, direction) {
+Point.prototype.attach = function (point) {
 
     this.constraints.push(
-        new Constraint(this, point, direction)
+        new Constraint(this, point)
     );
 };
 
@@ -143,10 +143,9 @@ Point.prototype.pin = function (pinx, piny) {
     this.pin_y = piny;
 };
 
-var Constraint = function (p1, p2, direction) {
+var Constraint = function (p1, p2) {
     this.p1 = p1;
     this.p2 = p2;
-    this.direction = direction;
     this.length = spacing;
 };
 
@@ -158,8 +157,8 @@ Constraint.prototype.resolve = function () {
 
     if (dist > tear_distance) this.p1.remove_constraint(this);
 
-    var px = this.direction * diff_x * diff * 0.5;
-    var py = this.direction * diff_y * diff * 0.5;
+    var px = diff_x * diff * 0.5;
+    var py = diff_y * diff * 0.5;
 
     this.p1.x += px;
     this.p1.y += py;
@@ -193,8 +192,8 @@ Cloth.prototype.initializeConstraints = function(){
         for (var col = 0; col <= cloth_width; col++) {
             var p = this.points[row][col];
             p.yIndex == 0 && p.pin(p.x, p.y);
-            p.xIndex != 0 && p.attach(this.points[row][col - 1], 1);
-            p.yIndex != 0 && p.attach(this.points[row - 1][col], 1);
+            p.xIndex != 0 && p.attach(this.points[row][col - 1]);
+            p.yIndex != 0 && p.attach(this.points[row - 1][col]);
         }
     }
 };

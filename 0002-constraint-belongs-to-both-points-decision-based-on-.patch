@@ -1,0 +1,113 @@
+From 5208bf4bf9ca7c7201b35e4f2214d3dbb8604078 Mon Sep 17 00:00:00 2001
+From: Sruti <srutis90@gmail.com>
+Date: Thu, 11 Dec 2014 02:48:53 -0800
+Subject: [PATCH 2/3] constraint belongs to both points, decision based on
+ first point of constraint
+
+---
+ .idea/workspace.xml         | 13 ++++++-------
+ tearableCloth/NBodyCloth.js | 14 ++++++++------
+ 2 files changed, 14 insertions(+), 13 deletions(-)
+
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+index 0d38159..e0fd5ab 100644
+--- a/.idea/workspace.xml
++++ b/.idea/workspace.xml
+@@ -2,7 +2,6 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="108a2b58-060c-4285-8e48-7d8dbf674424" name="Default" comment="">
+-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
+       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" afterPath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" />
+       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+     </list>
+@@ -31,8 +30,8 @@
+       <file leaf-file-name="NBodyCloth.js" pinned="false" current-in-tab="true">
+         <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
+           <provider selected="true" editor-type-id="text-editor">
+-            <state vertical-scroll-proportion="0.36408567" vertical-offset="2363" max-vertical-offset="4964">
+-              <caret line="152" column="10" selection-start-line="152" selection-start-column="8" selection-end-line="152" selection-end-column="10" />
++            <state vertical-scroll-proportion="0.50082374" vertical-offset="1328" max-vertical-offset="4998">
++              <caret line="96" column="43" selection-start-line="96" selection-start-column="43" selection-end-line="96" selection-end-column="43" />
+               <folding />
+             </state>
+           </provider>
+@@ -192,6 +191,8 @@
+       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24304539" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
++      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+@@ -199,9 +200,7 @@
+       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+     </layout>
+@@ -270,8 +269,8 @@
+     </entry>
+     <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
+       <provider selected="true" editor-type-id="text-editor">
+-        <state vertical-scroll-proportion="0.36408567" vertical-offset="2363" max-vertical-offset="4964">
+-          <caret line="152" column="10" selection-start-line="152" selection-start-column="8" selection-end-line="152" selection-end-column="10" />
++        <state vertical-scroll-proportion="0.50082374" vertical-offset="1328" max-vertical-offset="4998">
++          <caret line="96" column="43" selection-start-line="96" selection-start-column="43" selection-end-line="96" selection-end-column="43" />
+           <folding />
+         </state>
+       </provider>
+diff --git a/tearableCloth/NBodyCloth.js b/tearableCloth/NBodyCloth.js
+index 966a792..184e73b 100644
+--- a/tearableCloth/NBodyCloth.js
++++ b/tearableCloth/NBodyCloth.js
+@@ -93,7 +93,8 @@ Point.prototype.draw = function () {
+     if (this.constraints.length <= 0) return;
+ 
+     var i = this.constraints.length;
+-    while (i--) this.constraints[i].draw();
++    while (i--)
++        if(this.constraints[i].p1 == this) this.constraints[i].draw();
+ };
+ 
+ Point.prototype.resolve_constraints = function () {
+@@ -105,7 +106,7 @@ Point.prototype.resolve_constraints = function () {
+     }
+ 
+     var i = this.constraints.length;
+-    while (i--) this.constraints[i].resolve();
++    while (i--) this.constraints[i].resolve(this);
+ 
+     if (this.x > boundsx) {
+         this.x = 2 * boundsx - this.x;
+@@ -122,9 +123,9 @@ Point.prototype.resolve_constraints = function () {
+ 
+ Point.prototype.attach = function (point) {
+ 
+-    this.constraints.push(
+-        new Constraint(this, point)
+-    );
++    var c = new Constraint(this, point);
++    this.constraints.push(c);
++    point.constraints.push(c);
+ };
+ 
+ Point.prototype.remove_constraint = function (lnk) {
+@@ -149,7 +150,8 @@ var Constraint = function (p1, p2) {
+     this.length = spacing;
+ };
+ 
+-Constraint.prototype.resolve = function () {
++Constraint.prototype.resolve = function (pt) {
++    if(pt == this.p2) return;
+     var diff_x = this.p1.x - this.p2.x,
+         diff_y = this.p1.y - this.p2.y,
+         dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y),
+-- 
+1.9.4.msysgit.1
+

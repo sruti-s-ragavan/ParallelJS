@@ -108,7 +108,7 @@ Point.prototype.resolve_constraints = function (direction) {
     var i = this.constraints.length;
     while (i--)
         if(this.constraints[i].direction == direction)
-            this.constraints[i].resolve(this);
+            this.constraints[i].resolve();
 
     if (this.x > boundsx) {
         this.x = 2 * boundsx - this.x;
@@ -156,7 +156,7 @@ var Constraint = function (p1, p2, direction) {
     this.direction = direction;
 };
 
-Constraint.prototype.resolve = function (pt) {
+Constraint.prototype.resolve = function () {
 
     var diff_x = this.p1.x - this.p2.x,
         diff_y = this.p1.y - this.p2.y,

@@ -212,7 +212,7 @@ Array.prototype.split = function(N){
 
 
 Cloth.prototype.slicePoints = function(){
-    var N = 8;
+    var N = 4;
     this.horizontalSlices = [];
     this.verticalSlices = [];
 
@@ -243,12 +243,12 @@ Cloth.prototype.initializeConstraints = function(){
 
 Cloth.prototype.resolveInSlices = function(){
     for (var i = 0; i < this.horizontalSlices.length; i++)
-        this.horizontalSlices[i].map(function (slice) {
+        this.horizontalSlices[i].mapPar(function (slice) {
             for (var j = 0; j < slice.length; j++)
                 slice[j].resolve_constraints("y");
         });
     for(var i=0 ; i < this.verticalSlices.length; i++)
-        this.verticalSlices[i].map(function(slice){
+        this.verticalSlices[i].mapPar(function(slice){
             for(var j=0; j<slice.length; j++)
                 slice[j].resolve_constraints("x");
         });

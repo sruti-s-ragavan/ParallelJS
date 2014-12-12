@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="108a2b58-060c-4285-8e48-7d8dbf674424" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" afterPath="$PROJECT_DIR$/tearableCloth/NBodyCloth.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ParallelJS.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,8 +31,8 @@
           <file leaf-file-name="NBodyCloth.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.67336684" vertical-offset="3557" max-vertical-offset="6103">
-                  <caret line="225" column="24" selection-start-line="225" selection-start-column="24" selection-end-line="225" selection-end-column="24" />
+                <state vertical-scroll-proportion="0.37939698" vertical-offset="3487" max-vertical-offset="6103">
+                  <caret line="214" column="14" selection-start-line="214" selection-start-column="14" selection-end-line="214" selection-end-column="14" />
                   <folding />
                 </state>
               </provider>
@@ -402,8 +401,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tearableCloth/NBodyCloth.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67336684" vertical-offset="3557" max-vertical-offset="6103">
-          <caret line="225" column="24" selection-start-line="225" selection-start-column="24" selection-end-line="225" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.37939698" vertical-offset="3487" max-vertical-offset="6103">
+          <caret line="214" column="14" selection-start-line="214" selection-start-column="14" selection-end-line="214" selection-end-column="14" />
           <folding />
         </state>
       </provider>

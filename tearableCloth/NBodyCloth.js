@@ -215,11 +215,11 @@ Cloth.prototype.update = function () {
     while (times--) {
         for(var i=0 ; i<=cloth_height; i++)
             this.points[i].map(function(pt){
-                pt.resolve_constraints("x");
+                pt.resolve_constraints("y");
             });
         for(var i=0 ; i<=cloth_width; i++)
             for(var j=0; j<=cloth_height; j++)
-                this.points[j][i].resolve_constraints("y");
+                this.points[j][i].resolve_constraints("x");
     }
     this.updateAllPoints();
 };

@@ -196,6 +196,38 @@ var Cloth = function () {
         this.points.push(row);
     }
     this.initializeConstraints();
+    this.slicePoints();
+};
+
+Array.prototype.split = function(N){
+    var slices = [];
+    var l = this.length;
+    var sliceLength = Math.ceil(this.length / N);
+    for(var i= 0, startIndex = 0; i<N; i++, startIndex += sliceLength){
+        var s = this.slice(startIndex, startIndex + sliceLength);
+        slices.push(s);
+    }
+    return slices;
+};
+
+
+Cloth.prototype.slicePoints = function(){
+    var N = 8;
+    this.horizontalSlices = [];
+    this.verticalSlices = [];
+
+    for (var i = 0; i <= cloth_height; i++) {
+        var rowSlices = this.points[i].split(N);
+        this.horizontalSlices.push(rowSlices);
+    }
+
+    for(var i=0; i<=cloth_width; i++) {
+        var column = [];
+        for(var j=0; j<=cloth_height; j++)
+            column.push(this.points[j][i]);
+        var colSlices = column.split(N);
+        this.verticalSlices.push(colSlices);
+    }
 };
 
 Cloth.prototype.initializeConstraints = function(){
@@ -209,17 +241,35 @@ Cloth.prototype.initializeConstraints = function(){
     }
 };
 
+Cloth.prototype.resolveInSlices = function(){
+    for (var i = 0; i < this.horizontalSlices.length; i++)
+        this.horizontalSlices[i].map(function (slice) {
+            for (var j = 0; j < slice.length; j++)
+                slice[j].resolve_constraints("y");
+        });
+    for(var i=0 ; i < this.verticalSlices.length; i++)
+        this.verticalSlices[i].map(function(slice){
+            for(var j=0; j<slice.length; j++)
+                slice[j].resolve_constraints("x");
+        });
+};
+
+Cloth.prototype.resolveAllPoints = function(){
+    for(var i=0; i<= cloth_height; i++){
+        for(var j=0; j<=cloth_width; j++)
+            this.points[i][j].resolve_constraints("y");
+    }
+
+    for(var i=0; i<=cloth_width; i++)
+        for(var j=0; j<=cloth_height; j++)
+            this.points[j][i].resolve_constraints("x");
+};
+
 Cloth.prototype.update = function () {
     var times = physics_accuracy;
 
     while (times--) {
-        for(var i=0 ; i<=cloth_height; i++)
-            this.points[i].map(function(pt){
-                pt.resolve_constraints("y");
-            });
-        for(var i=0 ; i<=cloth_width; i++)
-            for(var j=0; j<=cloth_height; j++)
-                this.points[j][i].resolve_constraints("x");
+        this.resolveInSlices();
     }
     this.updateAllPoints();
 };
